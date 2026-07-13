@@ -43,7 +43,5 @@ html.proton-docs-local-dark-mode .proton-local-after-shadow::after {
 
 /* Proton Docs' editor toolbar needs an explicit override. */
 html.proton-docs-local-dark-mode .DocumentEditorToolbar {
-  box-shadow:
-    0 1px 3px rgb(255 255 255 / 0.22),
-    0 8px 24px rgb(255 255 255 / 0.6) !important;
+  box-shadow: none !important;
 }
