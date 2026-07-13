@@ -31,3 +31,12 @@ html.proton-docs-local-dark-mode select,
 html.proton-docs-local-dark-mode button {
   color-scheme: dark !important;
 }
+
+/* Shadows may be drawn by a component's decorative pseudo-elements. */
+html.proton-docs-local-dark-mode .proton-local-before-shadow::before {
+  box-shadow: var(--proton-local-before-shadow) !important;
+}
+
+html.proton-docs-local-dark-mode .proton-local-after-shadow::after {
+  box-shadow: var(--proton-local-after-shadow) !important;
+}

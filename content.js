@@ -4,6 +4,21 @@ const shadowStyles = new Map();
 let shadowObserver;
 let shadowScanQueued = false;
 
+function rememberOriginalStyles(element) {
+  if (shadowStyles.has(element)) return;
+
+  shadowStyles.set(element, {
+    boxShadow: element.style.getPropertyValue("box-shadow"),
+    boxShadowPriority: element.style.getPropertyPriority("box-shadow"),
+    beforeShadow: element.style.getPropertyValue("--proton-local-before-shadow"),
+    beforeShadowPriority: element.style.getPropertyPriority("--proton-local-before-shadow"),
+    afterShadow: element.style.getPropertyValue("--proton-local-after-shadow"),
+    afterShadowPriority: element.style.getPropertyPriority("--proton-local-after-shadow"),
+    hadBeforeClass: element.classList.contains("proton-local-before-shadow"),
+    hadAfterClass: element.classList.contains("proton-local-after-shadow")
+  });
+}
+
 function invertedShadow(shadow) {
   // Computed shadows are serialised as rgb()/rgba(). We retain the geometry
   // and alpha but use white as the source colour, which becomes dark after the
@@ -28,14 +43,20 @@ function applyShadowFix(element) {
   const correctedShadow = invertedShadow(shadow);
   if (shadow === correctedShadow) return;
 
-  if (!shadowStyles.has(element)) {
-    shadowStyles.set(element, {
-      value: element.style.getPropertyValue("box-shadow"),
-      priority: element.style.getPropertyPriority("box-shadow")
-    });
-  }
-
+  rememberOriginalStyles(element);
   element.style.setProperty("box-shadow", correctedShadow, "important");
+}
+
+function applyPseudoShadowFix(element, pseudoElement, property, className) {
+  const shadow = getComputedStyle(element, pseudoElement).boxShadow;
+  if (!shadow || shadow === "none") return;
+
+  const correctedShadow = invertedShadow(shadow);
+  if (shadow === correctedShadow) return;
+
+  rememberOriginalStyles(element);
+  element.style.setProperty(property, correctedShadow, "important");
+  element.classList.add(className);
 }
 
 function scanShadows(root = document.documentElement) {
@@ -43,6 +64,11 @@ function scanShadows(root = document.documentElement) {
 
   applyShadowFix(root);
   root.querySelectorAll?.("*").forEach(applyShadowFix);
+  const descendants = root.querySelectorAll?.("*") ?? [];
+  [root, ...descendants].forEach((element) => {
+    applyPseudoShadowFix(element, "::before", "--proton-local-before-shadow", "proton-local-before-shadow");
+    applyPseudoShadowFix(element, "::after", "--proton-local-after-shadow", "proton-local-after-shadow");
+  });
 }
 
 function queueShadowScan() {
@@ -56,13 +82,21 @@ function queueShadowScan() {
 
 function restoreShadows() {
   for (const [element, originalStyle] of shadowStyles) {
-    if (originalStyle.value) {
-      element.style.setProperty("box-shadow", originalStyle.value, originalStyle.priority);
-    } else {
-      element.style.removeProperty("box-shadow");
-    }
+    restoreProperty(element, "box-shadow", originalStyle.boxShadow, originalStyle.boxShadowPriority);
+    restoreProperty(element, "--proton-local-before-shadow", originalStyle.beforeShadow, originalStyle.beforeShadowPriority);
+    restoreProperty(element, "--proton-local-after-shadow", originalStyle.afterShadow, originalStyle.afterShadowPriority);
+    element.classList.toggle("proton-local-before-shadow", originalStyle.hadBeforeClass);
+    element.classList.toggle("proton-local-after-shadow", originalStyle.hadAfterClass);
   }
   shadowStyles.clear();
+}
+
+function restoreProperty(element, property, value, priority) {
+  if (value) {
+    element.style.setProperty(property, value, priority);
+  } else {
+    element.style.removeProperty(property);
+  }
 }
 
 function startShadowFix() {
