@@ -10,6 +10,10 @@ function rememberOriginalStyles(element) {
   shadowStyles.set(element, {
     boxShadow: element.style.getPropertyValue("box-shadow"),
     boxShadowPriority: element.style.getPropertyPriority("box-shadow"),
+    border: element.style.getPropertyValue("border"),
+    borderPriority: element.style.getPropertyPriority("border"),
+    outline: element.style.getPropertyValue("outline"),
+    outlinePriority: element.style.getPropertyPriority("outline"),
     beforeShadow: element.style.getPropertyValue("--proton-local-before-shadow"),
     beforeShadowPriority: element.style.getPropertyPriority("--proton-local-before-shadow"),
     afterShadow: element.style.getPropertyValue("--proton-local-after-shadow"),
@@ -59,6 +63,15 @@ function applyPseudoShadowFix(element, pseudoElement, property, className) {
   element.classList.add(className);
 }
 
+function clearToolbarChrome(element) {
+  if (!(element instanceof HTMLElement) || !element.matches(".DocumentEditorToolbar")) return;
+
+  rememberOriginalStyles(element);
+  element.style.setProperty("border", "none", "important");
+  element.style.setProperty("outline", "none", "important");
+  element.style.setProperty("box-shadow", "none", "important");
+}
+
 function scanShadows(root = document.documentElement) {
   if (!document.documentElement.classList.contains(ROOT_CLASS) || !root) return;
 
@@ -68,6 +81,7 @@ function scanShadows(root = document.documentElement) {
   [root, ...descendants].forEach((element) => {
     applyPseudoShadowFix(element, "::before", "--proton-local-before-shadow", "proton-local-before-shadow");
     applyPseudoShadowFix(element, "::after", "--proton-local-after-shadow", "proton-local-after-shadow");
+    clearToolbarChrome(element);
   });
 }
 
@@ -83,6 +97,8 @@ function queueShadowScan() {
 function restoreShadows() {
   for (const [element, originalStyle] of shadowStyles) {
     restoreProperty(element, "box-shadow", originalStyle.boxShadow, originalStyle.boxShadowPriority);
+    restoreProperty(element, "border", originalStyle.border, originalStyle.borderPriority);
+    restoreProperty(element, "outline", originalStyle.outline, originalStyle.outlinePriority);
     restoreProperty(element, "--proton-local-before-shadow", originalStyle.beforeShadow, originalStyle.beforeShadowPriority);
     restoreProperty(element, "--proton-local-after-shadow", originalStyle.afterShadow, originalStyle.afterShadowPriority);
     element.classList.toggle("proton-local-before-shadow", originalStyle.hadBeforeClass);
