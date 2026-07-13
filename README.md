@@ -10,7 +10,8 @@ Chromium browsers that allow unpacked extensions.
 
 - Applies a reversible dark visual treatment only on `docs.proton.me`.
 - Leaves images, video, and canvases in their intended colours.
-- Keeps inline `currentColor` SVG interface icons light.
+- Keeps inline `currentColor` SVG interface icons light and preserves dark
+  elevation shadows across Proton's UI.
 - Lets you toggle the effect from the toolbar popup or with
   <kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd>.
 
@@ -42,9 +43,10 @@ straight away.
 ## How it works
 
 Proton Docs is a moving target internally, so this extension avoids brittle
-editor-specific selectors. It applies a display-only filter to the page and
-reverses that treatment for raster media. This keeps the extension small,
-resilient, and content-safe.
+editor-specific selectors. It applies a display-only filter to the page,
+reverses that treatment for raster media, and corrects each rendered shadow's
+colour while retaining its original size and opacity. This keeps the extension
+small, resilient, and content-safe.
 
 ## Caveat
 

@@ -31,16 +31,3 @@ html.proton-docs-local-dark-mode select,
 html.proton-docs-local-dark-mode button {
   color-scheme: dark !important;
 }
-
-/*
- * The page filter turns Proton's normal black elevation shadows pale. Supply
- * white source shadows for floating UI instead: after inversion they render as
- * soft black shadows, without flattening every element on the page.
- */
-html.proton-docs-local-dark-mode [role="dialog"],
-html.proton-docs-local-dark-mode [role="menu"],
-html.proton-docs-local-dark-mode [role="listbox"],
-html.proton-docs-local-dark-mode [role="tooltip"],
-html.proton-docs-local-dark-mode [data-floating-ui-portal] > * {
-  box-shadow: 0 12px 36px rgb(255 255 255 / 0.72) !important;
-}
