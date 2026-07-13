@@ -1,0 +1,33 @@
+/*
+ * Proton Docs' editor is a live app with frequently changing internal markup.
+ * Inverting the composited page makes this resilient to class-name changes.
+ * Images, video, SVGs and canvases are inverted a second time so their content
+ * retains its intended colours.
+ */
+html.proton-docs-local-dark-mode {
+  background: #101114 !important;
+  color-scheme: dark !important;
+  filter: invert(0.91) hue-rotate(180deg) !important;
+}
+
+html.proton-docs-local-dark-mode img,
+html.proton-docs-local-dark-mode picture,
+html.proton-docs-local-dark-mode video,
+html.proton-docs-local-dark-mode canvas,
+html.proton-docs-local-dark-mode [style*="background-image"] {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/*
+ * Do not reverse inline SVGs. Proton's interface icons commonly use
+ * `fill: currentColor`; the page-level filter already makes those icons light.
+ * Reversing the whole SVG would make them dark again.
+ */
+
+/* Keep native controls consistent with the surrounding dark UI. */
+html.proton-docs-local-dark-mode input,
+html.proton-docs-local-dark-mode textarea,
+html.proton-docs-local-dark-mode select,
+html.proton-docs-local-dark-mode button {
+  color-scheme: dark !important;
+}
