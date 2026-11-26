@@ -143,15 +143,28 @@ function setDarkMode(enabled) {
   }
 }
 
+// Only darken Proton Docs when the operating system is also in dark mode, so
+// the page follows the system theme like the rest of the browser.
+const systemDarkMode = matchMedia("(prefers-color-scheme: dark)");
+let userEnabled = true;
+
+function applyDarkMode() {
+  setDarkMode(userEnabled && systemDarkMode.matches);
+}
+
 chrome.storage.local.get({ [DARK_MODE_KEY]: true }, (settings) => {
-  setDarkMode(settings[DARK_MODE_KEY]);
+  userEnabled = settings[DARK_MODE_KEY];
+  applyDarkMode();
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "local" && changes[DARK_MODE_KEY]) {
-    setDarkMode(changes[DARK_MODE_KEY].newValue);
+    userEnabled = changes[DARK_MODE_KEY].newValue;
+    applyDarkMode();
   }
 });
+
+systemDarkMode.addEventListener("change", applyDarkMode);
 
 // A quick escape hatch while editing: Cmd/Ctrl + Shift + D.
 document.addEventListener("keydown", (event) => {

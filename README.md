@@ -9,6 +9,8 @@ Chromium browsers that allow unpacked extensions.
 ## What it does
 
 - Applies a reversible dark visual treatment only on `docs.proton.me`.
+- Follows your system theme: the effect is only applied while your operating
+  system is in dark mode, and switches automatically when the theme changes.
 - Leaves images, video, and canvases in their intended colours.
 - Keeps inline `currentColor` SVG interface icons light and preserves dark
   elevation shadows across Proton's UI.
@@ -35,10 +37,11 @@ Its only site permission is `https://docs.proton.me/*`.
 3. Click **Load unpacked**.
 4. Choose this repository's folder.
 5. Open [Proton Docs](https://docs.proton.me). The dark mode is enabled by
-   default.
+   default and applies whenever your system is in dark mode.
 
-Click the extension icon to turn it on or off. Changes apply to open Docs tabs
-straight away.
+Click the extension icon to turn it on or off. When it is off, Proton Docs stays
+light even if your system is dark. Changes apply to open Docs tabs straight
+away.
 
 ## How it works
 
